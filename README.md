@@ -3,16 +3,16 @@
 
 ## Примеры
 ### Пример 1
-$text = "Today is very good a sunny day";
-$word1 = 'day';
+$text = "Today is very good a sunny day";  
+$word1 = 'day';  
 $word2 = 'Today';
 
 min distance: 5  
 max distance: 5
 
 ### Пример 2
-$text = "Today is very good a sunny day and tomorrow will be very good day too.";
-$word1 = 'day';
+$text = "Today is very good a sunny day and tomorrow will be very good day too.";  
+$word1 = 'day';  
 $word2 = 'Today';
 
 min distance: 5  
@@ -20,10 +20,10 @@ max distance: 12
 
 ## Использование
 1. Запустить приложение
-2. Следовать текстовым подсказкам:
-** Ввести имя файла
-** Ввести первое искомое слово
-** Ввести второе искомое слово
+2. Следовать текстовым подсказкам
+2.1. Ввести имя файла
+2.2. Ввести первое искомое слово
+2.3. Ввести второе искомое слово
 
 ## Затраченное время 
 1.5 часа
