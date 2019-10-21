@@ -11,8 +11,6 @@ using System.Text.RegularExpressions;
 //  Дан файл с текстом. Напишите функцию которая находит минимальное и максимальное расстояние между двумя словами.
 //  Расстояние измеряется числом слов (одна буква тоже слово).
 
-//Сложность алгоритма: O(m*n), где m и n - количество искомых слов в тексте. 
-
 namespace AlgorithmTask {
     internal class Program {
         private const string SplitPattern = @"\W+";
@@ -89,42 +87,58 @@ namespace AlgorithmTask {
 
             return parsedData[0].ToLower();
         }
-
-        /// <summary> Находит все позиции искомых слов в тексте </summary>
+        
+        /// <summary> Рассчитывает минимальное и максимальное расстояние между искомыми словами </summary>
         /// <param name="source"> Текст, в котором будет происходить поиск слов </param>
         /// <param name="firstWord"> Первое искомое слово </param>
         /// <param name="secondWord"> Второе искомое слово </param>
         /// <exception cref="InvalidDataException">Выбрасывается, когда хотя бы одно слово не найдено в тексте</exception>
-        private static void FindWordsPositions(List<string> source, string firstWord, string secondWord) {
-            _firstWordPositions = new List<int>();
-            _secondWordPositions = new List<int>();
-
+        private static void CalculateDistances(List<string> source, string firstWord, string secondWord) {
+            var firstWordFound = false;
+            var secondWordFound = false;
+            var firstMin = -1;
+            var secondMin = -1;
+            var firstMax = -1;
+            var secondMax = -1;
+            
             for (var i = 0; i < source.Count; ++i) {
                 var word = source[i].ToLower();
+
+                if (!word.Equals(firstWord) && !word.Equals(secondWord)) {
+                    continue;
+                }
+                
                 if (word.Equals(firstWord)) {
-                    _firstWordPositions.Add(i);
+                    firstMin = i;
+
+                    if (!firstWordFound || secondWordFound && Math.Abs(i - secondMax) - 1 > _maxDistance) {
+                        firstMax = i;
+                    }
+                    
+                    firstWordFound = true;
                 }
 
                 if (word.Equals(secondWord)) {
-                    _secondWordPositions.Add(i);
+                    secondMin = i;
+                    
+                    if (!secondWordFound || firstWordFound && Math.Abs(i - firstMax) - 1 > _maxDistance) {
+                        secondMax = i;
+                    }
+                    
+                    secondWordFound = true;
+                }
+
+                if (firstWordFound && secondWordFound) {
+                    _minDistance = Math.Min(Math.Abs(firstMin - secondMin) - 1, _minDistance);
+                    _maxDistance = Math.Max(Math.Abs(firstMax - secondMax) - 1, _maxDistance);
                 }
             }
 
-            if (_firstWordPositions.Count == 0 || _secondWordPositions.Count == 0) {
-                var word = _firstWordPositions.Count == 0 ? firstWord : secondWord;
+            if (!firstWordFound || !secondWordFound) {
+                var word = !firstWordFound ? firstWord : secondWord;
                 throw new InvalidDataException($"Source text does not contains \'{word}\'");
             }
-        }
 
-        /// <summary> Рассчитывает минимальное и максимальное расстояние между искомыми словами </summary>
-        private static void CalculateDistances() {
-            foreach (var first in _firstWordPositions) {
-                foreach (var second in _secondWordPositions) {
-                    _minDistance = Math.Min(Math.Abs(first - second) - 1, _minDistance);
-                    _maxDistance = Math.Max(Math.Abs(first - second) - 1, _maxDistance);
-                }
-            }
-            
             //Для случаев, когда искомые слова совпадают.
             _minDistance = Math.Max(0, _minDistance);
             _maxDistance = Math.Max(0, _maxDistance);
@@ -138,13 +152,12 @@ namespace AlgorithmTask {
                 var firstWord = GetWordToFind(Console.ReadLine());
                 Console.Write("Second searching word: ");
                 var secondWord = GetWordToFind(Console.ReadLine());
-
+                
                 _maxDistance = Decimal.Zero;
                 _minDistance = Decimal.MaxValue;
 
-                FindWordsPositions(fileData, firstWord, secondWord);
-                CalculateDistances();
-                
+                CalculateDistances(fileData, firstWord, secondWord);
+                    
                 Console.WriteLine($"Min distance: {_minDistance}");
                 Console.WriteLine($"Max distance: {_maxDistance}");
             }
